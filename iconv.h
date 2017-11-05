@@ -108,10 +108,10 @@ extern "C" {
 #define iconv_cp437       "cp437"
 #define iconv_cp850       "cp850"
 
-typedef void* iconv_t;
+typedef void *iconv_t;
 
-iconv_t iconv_open(const char *, const char *);
-size_t  iconv(iconv_t, char **, size_t *, char **, size_t *);
+iconv_t iconv_open(const char *to, const char *from);
+size_t  iconv(iconv_t, char **inp, size_t *, char **outp, size_t *);
 int     iconv_close(iconv_t);
 
 #ifdef __cplusplus
