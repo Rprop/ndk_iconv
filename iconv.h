@@ -27,6 +27,7 @@
  *
  * https://github.com/rrrfff/ndk_iconv
  */
+
 #ifndef NDK_ANDROID_SUPPORT_ICONV_H
 #define NDK_ANDROID_SUPPORT_ICONV_H
 
@@ -35,6 +36,7 @@ extern "C" {
 #endif
 
 #include <stddef.h>
+
 #define iconv_utf8     "utf8"
 #define iconv_wchart   "wchart"
 #define iconv_ucs2     "ucs2"

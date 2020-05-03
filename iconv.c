@@ -27,6 +27,7 @@
  *
  * https://github.com/rrrfff/ndk_iconv
  */
+
 #include "iconv.h"
 #include <errno.h>
 #include <wchar.h>
@@ -4994,7 +4995,6 @@ static void put_32(unsigned char *s, unsigned c, int e)
 
 /* Adapt as needed */
 #define mbrtowc_utf8 mbrtowc
-#define wctomb_utf8 wctomb
 
 size_t iconv(iconv_t cd0, char **__restrict in, size_t *__restrict inb, char **__restrict out, size_t *__restrict outb)
 {
@@ -5032,13 +5032,11 @@ size_t iconv(iconv_t cd0, char **__restrict in, size_t *__restrict inb, char **_
 			l = sizeof(wchar_t);
 			if (*inb < l) goto starved;
 			c = *(wchar_t *)*in;
-			if (0) {
 		case UTF_32BE:
 		case UTF_32LE:
 			l = 4;
 			if (*inb < 4) goto starved;
 			c = get_32((const unsigned char *)*in, type);
-			}
 			if (c - 0xd800u < 0x800u || c >= 0x110000u) goto ilseq;
 			break;
 		case UCS2BE:
@@ -5048,13 +5046,13 @@ size_t iconv(iconv_t cd0, char **__restrict in, size_t *__restrict inb, char **_
 			l = 2;
 			if (*inb < 2) goto starved;
 			c = get_16((const unsigned char *)*in, type);
-			if ((unsigned)(c - 0xdc00) < 0x400) goto ilseq;
-			if ((unsigned)(c - 0xd800) < 0x400) {
+			if (c - 0xdc00 < 0x400) goto ilseq;
+			if (c - 0xd800 < 0x400) {
 				if (type - UCS2BE < 2U) goto ilseq;
 				l = 4;
 				if (*inb < 4) goto starved;
 				d = get_16((const unsigned char *)(*in + 2), type);
-				if ((unsigned)(d - 0xdc00) >= 0x400) goto ilseq;
+				if (d - 0xdc00 >= 0x400) goto ilseq;
 				c = ((c - 0xd7c0) << 10) + (d - 0xdc00);
 			}
 			break;
@@ -5227,10 +5225,10 @@ size_t iconv(iconv_t cd0, char **__restrict in, size_t *__restrict inb, char **_
 		case UTF_8:
 			if (*outb < 4) {
 				char tmp[4];
-				k = wctomb_utf8(tmp, c);
+				k = wcrtomb(tmp, c, NULL);
 				if (*outb < k) goto toobig;
 				memcpy(*out, tmp, k);
-			} else k = wctomb_utf8(*out, c);
+			} else k = wcrtomb(*out, c, NULL);
 			*out += k;
 			*outb -= k;
 			break;
